@@ -1,3 +1,4 @@
+import random
 from datetime import datetime
 import pytz
 import locale
@@ -14,15 +15,15 @@ class ContaCorrente():
        
     def __init__(self, nome:str, cpf:str,  num_conta:int):            
         
-        self._nome = nome.title()
-        self.__cpf = ContaCorrente._adaptar_cpf(cpf)
-        self._num_conta = num_conta
+        self.nome = nome.title()
+        self.cpf = ContaCorrente._adaptar_cpf(cpf)
+        self.num_conta = num_conta
         self._saldo = 0
         self._limite = None
         self._transacoes = []
-        self._cartoes = []
+        self.cartoes = []
         
-        
+
         
     @staticmethod
     def _data_hora():
@@ -97,19 +98,49 @@ class ContaCorrente():
         caonta_destino._saldo += valor
         caonta_destino._transacoes.append(f'Valor: {valor} | Saldo: {caonta_destino._saldo} | Data e Horario: {ContaCorrente._data_hora()}')
         
+        
 
 class CartaoCredito:
     
     def __init__(self, titular, conta_corrente):
         self.numero = 123
         self.titular = titular
-        self.data_validade= None
-        self.cod_seguranca = None
-        self.limite = None
+        self.data_validade= '{}/{}'.format(CartaoCredito._data_validade().month, CartaoCredito._data_validade().year + 4)
+        self.cod_seguranca = '{}{}{}'.format(random.randint(0,9), random.randint(0,9), random.randint(0,9))
+        self.limite = 500
         self.conta_corrente = conta_corrente
-        conta_corrente._cartoes.append(self)
+        self._senha = '1234'
+        
+        conta_corrente.cartoes.append(self)
+        
+    
+    @property 
+    def senha(self):  
+        return self._senha
+        
+        
+    @senha.setter
+    def senha(self, valor:str):
+        
+        if len(valor) == 4 and valor.isnumeric():
+            print("Nova senha alterada")
+            self._senha = valor
+        else:
+            print('Nova senha invalida')
+    
+    
+    
+    @staticmethod
+    def _data_validade():
+        fuso_horario = pytz.timezone('Brazil/West')
+        horario = datetime.now(fuso_horario)
+        return horario
+    
+    
+    def _numero_gerador(self):
+        random.randint(1000000000000000, 9999999999999999)
 
-        
-        
-        
-        
+   
+ 
+
+    
